@@ -1,0 +1,13 @@
+<ol>
+  <% @articles.each do |article|%>
+    <li>
+      <a href = "<%= article["url"] %>"> <%= article["title"] %> </a>
+      <span>(<%= "#{article["url"]}" %>)</span>
+      <br>
+        <div style = "width=75%;font-size:9pt;"><%= "#{article["description"]}" %></div>
+      <br>
+        <div style = "width=75%;font-size:8pt;">Submitted: <%= "#{article["calander_time"]}" %></div>
+    </li>
+
+  <% end %>
+</ol>
