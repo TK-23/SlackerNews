@@ -4,9 +4,25 @@
       <a href = "<%= article["url"] %>"> <%= article["title"] %> </a>
       <span>(<%= "#{article["url"]}" %>)</span>
       <br>
-        <div style = "width=75%;font-size:9pt;"><%= "#{article["description"]}" %></div>
-      <br>
-        <div style = "width=75%;font-size:8pt;">Submitted: <%= "#{article["calander_time"]}" %></div>
+        <div style = "width=75%;font-size:9pt;"><%="[#{article["calander_time"]}] #{URI.decode(article["description"])}" %></div>
+        <% if article["comments"] != nil %>
+        <div>
+          <ul>
+            <% article["comments"][0..2].each do |comment|%>
+              <li class= "comment"><%="[#{comment["time"]}] #{comment["comment"]}" %></li>
+            <% end %>
+            <li ><a class = "add_comment" href = "http://localhost:4567/addcomment/<%= article["article_id"] %>">Add a comment</a></li>
+          </ul>
+         <!--  <form method="post" action="/addcomment" class = "main_page_comment">
+            <textarea name = "comment" id = "comment" rows="1" cols="80" class = "input_label"></textarea>
+            <input type="hidden" name = "article_id" value = "<%= "#{article["article_id"]}" %>"/>
+            <input type="hidden" name = "time" value = "<%= Time.new.strftime("%m/%d/%Y") %>"/>
+            <input type="submit" value="Submit Comment" />
+          </form> -->
+        </div>
+        <% end %>
+
+
     </li>
 
   <% end %>

@@ -18,7 +18,7 @@ label {
 }
 
 input {
-  display: inline-block;
+  display: block;
   margin: 10px;
 }
 
@@ -29,6 +29,20 @@ textarea {
 li {
   font-size: 10pt;
   margin: 2px;
+  list-style: none;
+}
+
+a:hover {
+  color:white;
+}
+
+.add_comment {
+  font-size: 8pt;
+
+}
+
+.main_page_comment {
+  margin-left: 30px;
 }
 
 .error {

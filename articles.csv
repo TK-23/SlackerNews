@@ -1,2 +1,4 @@
-title,url,description,calander_time,clock_time
-Test,http://www.tutorialspoint.com/ruby/ruby_date_time.htm,This is just a test to see how it works,05-22-2014,13:55
+article_id,title,url,description,calander_time,clock_time
+0,Article 1,http://www.google.com,This%20is%20a%20very%20useful%20webiste,05-22-2014,21:31
+1,Article 2,http://www.ksl.com,This%20is%20a%20website%20that%20tells%20the%20news%20in%20Utah,05-22-2014,21:31
+2,Test 3,http://www.somesite.com,this%20should%20be%20about%2020%20characters,05-22-2014,21:40
