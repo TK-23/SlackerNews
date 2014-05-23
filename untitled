@@ -1,0 +1,20 @@
+
+def load_csv(csv)
+  all_rows = []
+  CSV.foreach(csv, headers: true) do |row|
+    all_rows << row.to_hash
+  end
+  all_rows
+end
+
+def find_subcomments(current_comment_id)
+  subcomments = []
+  load_csv("comments.csv").each do |sub_comment|
+    if current_comment_id == sub_comment["parent_comment"]
+      subcomments << sub_comment["comment"]
+    end
+  end
+  subcomments
+end
+
+find_subcomments("1")

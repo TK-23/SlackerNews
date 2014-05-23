@@ -2,22 +2,65 @@ require 'sinatra'
 require 'uri'
 require 'csv'
 
-def get_comment(article_id)
-  comments = []
-  CSV.foreach('comments.csv', headers: true) do |row|
-    comments << row.to_hash if row["article_id"] == article_id
+
+def load_csv(csv)
+  all_rows = []
+  CSV.foreach(csv, headers: true) do |row|
+    all_rows << row.to_hash
   end
-  comments.reverse
+  all_rows
+end
+
+def find_subcomments(initial_hash)
+  initial_hash["subcomments"] = []
+  load_csv("comments.csv").each do |sub_comment|
+    if ( initial_hash["comment_id"] == sub_comment["parent_comment"] ) && ( initial_hash["comment_id"] != sub_comment["comment_id"] )
+      initial_hash["subcomments"] << sub_comment.to_hash
+    end
+  end
+  if initial_hash["subcomments"] == []
+    initial_hash.delete("subcomments")
+  else
+    initial_hash["subcomments"].each do |subsubcomment|
+      find_subcomments(subsubcomment)
+    end
+  end
+  initial_hash
 end
 
 def get_articles
   all_articles = []
-  CSV.foreach('articles.csv', headers: true) do |row|
-    article = row.to_hash
-    article["comments"] = get_comment(row["article_id"])
+  load_csv("articles.csv").each do |article|
+    article["comments"] = []
+    load_csv("comments.csv").each do |comment|
+      if ( comment["parent_comment"] == comment["comment_id"] ) && ( comment["article_id"] == article["article_id"] )
+         article["comments"] << find_subcomments(comment)
+      end
+    end
     all_articles << article
   end
-  all_articles.reverse
+  all_articles
+end
+
+def get_matches(csv, field, article_id)
+  matches = []
+  CSV.foreach(csv, headers: true) do |row|
+    matches << row.to_hash if row[field] == article_id
+  end
+  matches.reverse
+end
+
+def get_comments
+  all_rows = []
+  CSV.foreach("comments.csv", headers: true) do |row|
+    row_info = row.to_hash
+    if row["comment_id"] != row["parent_comment"]
+      row_info["response_to"] = get_matches("comments.csv","comment_id",row["parent_comment"])[0]["comment"]
+    end
+    row_info["article"] = get_matches("articles.csv","article_id", row["article_id"])
+    all_rows << row_info
+  end
+  all_rows.reverse
 end
 
 def post_article(id, title, url, descriptor,calander_time,clock_time)
@@ -26,9 +69,9 @@ def post_article(id, title, url, descriptor,calander_time,clock_time)
   end
 end
 
-def post_comment(id, comment, time)
+def post_comment(comment_id,parent_comment,article_id, comment, time)
   CSV.open('comments.csv', 'a') do |csv|
-    csv << [id, comment, time]
+    csv << [comment_id,parent_comment,article_id, comment, time]
   end
 end
 
@@ -44,13 +87,26 @@ get "/submit"  do
   erb :submit
 end
 
+get "/comments"  do
+  @comments = get_comments
+  erb :comments
+end
+
 get "/addcomment/:article_id"  do
-  @article_info = get_articles.reverse[params[:article_id].to_i]
+  @article_info = get_articles[params[:article_id].to_i]
   erb :addcomment
 end
 
+get "/addresponse/:article_id/:parent_comment"  do
+  @comment_info = ""
+  get_comments.reverse.each { |comment| @comment_info = comment if comment["comment_id"].to_i == params[:parent_comment].to_i }
+  erb :addresponse
+end
+
 post "/addcomment"  do
-  post_comment(params[:article_id], params[:comment], params[:time])
+  comment_id = get_comments.length
+  params[:parent_comment] == nil ? ( parent_comment = get_comments.length ) : ( parent_comment = params[:parent_comment] )
+  post_comment(comment_id,parent_comment, params[:article_id], params[:comment], params[:time])
   redirect "/"
 end
 

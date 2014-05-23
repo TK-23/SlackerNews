@@ -1,12 +1,4 @@
-article_id,comment,time
-0,"Yup, it is!",05/22/2014
-0,More comments,05/22/2014
-0,even more comments,05/22/2014
-0,even even more comments,05/22/2014
-0,this only shows the first three comments,05/22/2014
-0,test,05/22/2014
-0,"test2
-",05/22/2014
-1,test,05/22/2014
-2,Cool!,05/22/2014
-2,Test 3,05/22/2014
+comment_id,parent_comment,article_id,comment,time
+0,0,0,Useful site!,05/23/2014
+1,0,0,Yup!,05/23/2014
+2,2,0,Duh!,05/23/2014
